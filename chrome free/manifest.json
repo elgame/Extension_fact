@@ -17,7 +17,6 @@
 
   "permissions": ["downloads", "storage", "tabs",
   	"https://portalcfdi.facturaelectronica.sat.gob.mx/*",
-  	"https://localhost/facturartebarato/*",
     "https://facturartebarato.com/*",
   	"https://*.facturartebarato.com/*"
   ],
