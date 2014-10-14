@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Descarga tus facturas",
+  "short_name": "FacturarteBarato",
   "version": "1.0",
 
   "description": "Descarga las facturas de la pagina del SAT en formato XML y Excel",
