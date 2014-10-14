@@ -1,5 +1,5 @@
 var paginas = [
-"https://facturartebarato.com",
+"https://localhost/facturartebarato",
 ];
 
 // Asigna los eventos y envia la peticion a la pagina del SAT
