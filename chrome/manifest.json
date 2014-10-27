@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Descarga tus facturas CFDI",
   "short_name": "FacturarteBarato",
-  "version": "1.0",
+  "version": "1.1",
 
   "description": "Descarga las facturas de la pagina del SAT en formato XML y Excel",
   "icons": {"128": "icon128.png"},
