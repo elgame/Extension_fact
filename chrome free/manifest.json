@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Descarga tus facturas CFDI Free",
   "short_name": "FacturarteBarato",
-  "version": "1.1",
+  "version": "1.2",
 
   "description": "Descarga las facturas de la pagina del SAT en formato XML y Excel",
   "minimum_chrome_version": "16.0.884",
@@ -25,6 +25,5 @@
       "matches": ["https://portalcfdi.facturaelectronica.sat.gob.mx/*"],
       "js": ["libs/jquery-2.1.1.min.js"]
     }
-  ],
-  "content_security_policy": "script-src 'self' https://; object-src 'self'"
+  ]
 }
