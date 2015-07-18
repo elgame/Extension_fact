@@ -10,10 +10,12 @@ $("#ContenedorDinamico table.encabezadoresultado tr th span").each(function(inde
 });
 excel += '</tr>';
 
+var chars = '';
 $("#DivPaginas table tbody tr").each(function(indextr, el) {
   excel += "<tr>";
   $(this).find("td span").each(function(index,data) {
-    excel += "<td style='width:"+widths[index]+"px;border:1px solid #000;'>" + $(this).text() + "</td>";
+    chars = $(this).text().replace("‘", "");
+    excel += "<td style='width:"+widths[index]+"px;border:1px solid #000;'>" + chars + "</td>";
   });
   excel += '</tr>';
 });

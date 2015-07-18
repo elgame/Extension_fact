@@ -133,6 +133,7 @@ jQuery.base64 = ( function( $ ) {
     var x = s.charCodeAt( i );
 
     if ( x > 255 ) {
+      console.log(x, s[i], i);
       throw "INVALID_CHARACTER_ERR: DOM Exception 5";
     }
 
