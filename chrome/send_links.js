@@ -1,7 +1,7 @@
 
 // Busca los links de descarga de los XML y los regresa al plugin
 var links = [];
-$("#ContenedorDinamico table img.BtnDescarga").each(function(index, el) {
+$("#ContenedorDinamico table img#BtnDescarga").each(function(index, el) {
   var $this = $(this);
 
   links.push({

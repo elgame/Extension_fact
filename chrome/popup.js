@@ -6,7 +6,7 @@ sessionData = null;
 
 // Obtiene el contenido de los xml y los comprime para descargar un zip
 var contadorFiles = 0, listFiles = [], incremetos = 0;
-function downloadCheckedLinks() {
+function downloadCheckedLinks(tipo) {
   contadorFiles = 0;
   listFiles = [];
   incremetos = 100/visibleLinks.length;
@@ -14,12 +14,12 @@ function downloadCheckedLinks() {
   // obtiene los xml
   for (var i = 0; i < visibleLinks.length; ++i) {
       contadorFiles++;
-      getXmlSat(visibleLinks[i]);
+      getXmlSat(visibleLinks[i], tipo);
   }
 }
 
 // Obtiene los datos de los xml
-function getXmlSat (vLinks) {
+function getXmlSat (vLinks, tipo) {
   $.get(vLinks.url, function(data){
     listFiles.push({
       xml: data,
@@ -33,7 +33,10 @@ function getXmlSat (vLinks) {
     contadorFiles--;
     // cuando es el ultimo entra a generar el zip
     if (contadorFiles == 0) {
-      createZip(listFiles);
+      if (tipo === 'excel')
+        createExcel(listFiles);
+      else
+        createZip(listFiles);
     }
   });
 }
@@ -62,13 +65,32 @@ function createZip (files) {
 }
 
 function downloadExcel () {
-  chrome.windows.getCurrent(function (currentWindow) {
-    chrome.tabs.query({active: true, windowId: currentWindow.id},
-    function(activeTabs) {
-      chrome.tabs.executeScript(activeTabs[0].id, {file: 'libs/jquery-2.1.1.min.js', allFrames: true});
-      chrome.tabs.executeScript(activeTabs[0].id, {file: 'send_table.js', allFrames: true});
-    });
-  });
+  downloadCheckedLinks('excel');
+  // chrome.windows.getCurrent(function (currentWindow) {
+  //   chrome.tabs.query({active: true, windowId: currentWindow.id},
+  //   function(activeTabs) {
+  //     chrome.tabs.executeScript(activeTabs[0].id, {file: 'libs/jquery-2.1.1.min.js', allFrames: true});
+  //     chrome.tabs.executeScript(activeTabs[0].id, {file: 'send_table.js', allFrames: true});
+  //   });
+  // });
+}
+
+// Crea el archivo de excel con los datos de los xmls
+function createExcel (files) {
+  var xmlDoc = undefined, xml = undefined;
+  for (var i = 0; i < files.length; ++i) {
+    if ($.trim(files[i].xml).length > 0) {
+      files[i].xml = files[i].xml.replace('<?xml version="1.0" encoding="utf-8"?>', '');
+      // files[i].xml = files[i].xml.replace(/(cfdi:|implocal:)/, '');
+      files[i].xml = $.trim(files[i].xml);
+      xmlDoc = $.parseXML( files[i].xml );
+      xml = $(xmlDoc).find('>:first-child');
+      console.log(files[i]);
+      console.log(xml.attr('subTotal'));
+      console.log(xml.children());
+      console.log(xml.children()[0]);
+    }
+  }
 }
 
 function downloadFileExcel (html) {
