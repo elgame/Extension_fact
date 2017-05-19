@@ -83,7 +83,7 @@ function downloadExcel () {
 function createExcel (files) {
   var xmlDoc = undefined, xml = undefined,
   emisor = undefined, receptor = undefined, impuestos = undefined, complemento = undefined,
-  $tabla = { header: {}, rows: [] };
+  $tabla = { header: {}, rows: [] }, t_ret = false, t_tras = false, t_retl = false, t_trasl = false;
   for (var i = 0; i < files.length; ++i) {
     if ($.trim(files[i].xml).length > 0) {
       files[i].xml = files[i].xml.replace('<?xml version="1.0" encoding="utf-8"?>', '');
@@ -143,21 +143,23 @@ function createExcel (files) {
         if (retenciones) {
           retenciones.children().each(function(index, el) {
             $tabla.header['Retencion_'+$(this).attr('impuesto').replace(' ', '')] = 'Retencion '+$(this).attr('impuesto');
-            $row['Retencion_'+$(this).attr('impuesto').replace(' ', '')]  = $(this).attr('importe');
+            $row['Retencion_'+$(this).attr('impuesto').replace(' ', '')] = $(this).attr('importe');
           });
+
+          t_ret = true;
+          $row['Total_Impuestos_Retenidos']  = parseFloat(impuestos.attr('totalImpuestosRetenidos'))||0;
         }
-        $tabla.header['Total_Impuestos_Retenidos'] = 'Total Impuestos Retenidos';
-        $row['Total_Impuestos_Retenidos']  = parseFloat(impuestos.attr('totalImpuestosRetenidos'))||0;
 
         if (traslados) {
           traslados.children().each(function(index, el) {
-            $tabla.header['Traslado_'+$(this).attr('impuesto').replace(' ', '')+'_'+$(this).attr('tasa')] =
-                'Traslado '+$(this).attr('impuesto')+' '+$(this).attr('tasa');
-            $row['Traslado_'+$(this).attr('impuesto').replace(' ', '')+'_'+$(this).attr('tasa')] = $(this).attr('importe');
+            $tabla.header['Traslado_'+$(this).attr('impuesto').replace(' ', '')+'_'+parseInt($(this).attr('tasa'))] =
+                'Traslado '+$(this).attr('impuesto')+' '+parseInt($(this).attr('tasa'));
+            $row['Traslado_'+$(this).attr('impuesto').replace(' ', '')+'_'+parseInt($(this).attr('tasa'))] = $(this).attr('importe');
           });
+
+          t_tras = true;
+          $row['Total_Impuestos_Trasladados']  = parseFloat(impuestos.attr('totalImpuestosTrasladados'))||0;
         }
-        $tabla.header['Total_Impuestos_Trasladados'] = 'Total Impuestos Trasladados';
-        $row['Total_Impuestos_Trasladados']  = parseFloat(impuestos.attr('totalImpuestosTrasladados'))||0;
       }
 
       // Impuestos locales
@@ -181,6 +183,8 @@ function createExcel (files) {
             $tabla.header['RetencionL_'+nm.replace(' ', '')+'_'+$(this).attr('TasadeRetencion')] = 'RetencionL '+nm+' '+$(this).attr('TasadeRetencion');
             $row['RetencionL_'+nm.replace(' ', '')+'_'+$(this).attr('TasadeRetencion')]  = $(this).attr('Importe');
           });
+
+          t_retl = true;
           $tabla.header['Total_RetencionesL'] = 'Total RetencionesL';
           $row['Total_RetencionesL']  = parseFloat(impuestosLocales.attr('TotaldeRetenciones'))||0;
         }
@@ -191,14 +195,26 @@ function createExcel (files) {
                 'TrasladoL '+$(this).attr('ImpLocTrasladado')+' '+$(this).attr('TasadeTraslado');
             $row['TrasladoL_'+$(this).attr('ImpLocTrasladado').replace(' ', '')+'_'+$(this).attr('TasadeTraslado')] = $(this).attr('Importe');
           });
+
+          t_trasl = true;
+          $tabla.header['Total_TrasladosL'] = 'Total TrasladosL';
+          $row['Total_TrasladosL']  = parseFloat(impuestos.attr('TotaldeTraslados'))||0;
         }
-        $tabla.header['Total_TrasladosL'] = 'Total TrasladosL';
-        $row['Total_TrasladosL']  = parseFloat(impuestos.attr('TotaldeTraslados'))||0;
       }
 
       $tabla.rows.push($row);
     }
   }
+
+  // Totales de los impuestos
+  if (t_ret)
+    $tabla.header['Total_Impuestos_Retenidos'] = 'Total Impuestos Retenidos';
+  if (t_tras)
+    $tabla.header['Total_Impuestos_Trasladados'] = 'Total Impuestos Trasladados';
+  if (t_retl)
+    $tabla.header['Total_Impuestos_Retenidos'] = 'Total Impuestos Retenidos';
+  if (t_trasl)
+    $tabla.header['Total_Impuestos_Trasladados'] = 'Total Impuestos Trasladados';
 
   var excel = "<table>";
   excel += "<tr style='font-weight:bold;font-size:12px;'>";
@@ -209,8 +225,11 @@ function createExcel (files) {
 
   $.each($tabla.rows, function(index, el) {
     excel += "<tr>";
-    $.each(el, function(index2, el2) {
-      excel += "<td>" + (el2? el2: '') + "</td>";
+    $.each($tabla.header, function(index2, el2) {
+      if (el[index2])
+        excel += "<td>" + el[index2] + "</td>";
+      else
+        excel += "<td></td>";
     });
     excel += '</tr>';
   });
